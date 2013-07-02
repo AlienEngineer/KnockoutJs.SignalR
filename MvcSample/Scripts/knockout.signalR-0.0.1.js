@@ -16,13 +16,21 @@
     // Bypass the applyBindings
     ko.applyBindings = function (viewModel, rootNode) {
 
+        // Affects the viewmodel with the hub.
+        initializeViewModel(viewModel);
+        
+
+        applyBindings(viewModel, rootNode);
+    };
+
+
+    // Affects the viewmodel with the hub.
+    var initializeViewModel = function(viewModel) {
         var name = viewModel.constructor['name'];
 
         if (name === undefined || name.length == 0) {
-            applyBindings(viewModel, rootNode);
             return;
         }
-
         name = name[0].toLowerCase() + name.slice(1);
 
         var hub = viewModel.hub = $.connection[name];
@@ -31,8 +39,6 @@
         viewModel.server = hub.server;
 
         $.connection.hub.start();
-
-        applyBindings(viewModel, rootNode);
     };
 
 }(window.jQuery, window.ko));
