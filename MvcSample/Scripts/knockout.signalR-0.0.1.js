@@ -11,5 +11,14 @@
         throw new Error("KnockoutJS.SignalR: KnockoutJs not found. Please ensure KnockoutJs is referenced before the knockout.SignalR.js file.");
     }
 
+    var applyBindings = ko.applyBindings;
+
+    // Bypass the applyBindings
+    ko.applyBindings = function(viewModel, rootNode) {
+
+
+
+        applyBindings(viewModel, rootNode);
+    };
 
 }(window.jQuery, window.ko));
