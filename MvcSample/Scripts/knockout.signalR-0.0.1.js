@@ -13,23 +13,59 @@
 
     var applyBindings = ko.applyBindings;
 
+
+    ko.observableRemote = function(value, idObservable) {
+
+        var observable = ko.observable(value);
+
+        var timeoutId;
+        var lastValue = value;
+
+        observable.subscribe(function (newValue) {
+            clearTimeout(timeoutId);
+            
+            timeoutId = setTimeout(function () {
+                if (lastValue === newValue) {
+                    return;
+                }
+
+                console.log("The value changed to : " + newValue + " for ID : " + idObservable());
+
+                lastValue = newValue;
+                
+            }, 500);
+            
+        });
+        
+        return observable;
+    };
+
     // Bypass the applyBindings
     ko.applyBindings = function (viewModel, rootNode) {
 
         // Affects the viewmodel with the hub.
-        initializeViewModel(viewModel);
+        var initiated = initializeViewModel(viewModel);
         
-
         applyBindings(viewModel, rootNode);
+        
+        if (initiated) {
+            return {
+                applyRemoteOperations: function(initFunc) {
+                    initFunc(viewModel);
+                }
+            };
+        }
+        return null;
     };
 
 
     // Affects the viewmodel with the hub.
+    // Starts the connection.
     var initializeViewModel = function(viewModel) {
         var name = viewModel.constructor['name'];
 
         if (name === undefined || name.length == 0) {
-            return;
+            return false;
         }
         name = name[0].toLowerCase() + name.slice(1);
 
@@ -37,8 +73,13 @@
 
         viewModel.client = hub.client;
         viewModel.server = hub.server;
+        
+        if (typeof (viewModel.init) === "function") {
+            viewModel.init();
+        }
 
         $.connection.hub.start();
+        return true;
     };
 
 }(window.jQuery, window.ko));

@@ -9,7 +9,7 @@
 <ul data-bind="foreach: tasks, visible: tasks().length > 0">
     <li>
         <input type="checkbox" data-bind="checked: isDone" />
-        <input data-bind="value: title, disable: isDone" />
+        <input data-bind="value: title, disable: isDone, valueUpdate: 'afterkeydown'" />
         <a href="#" data-bind="click: $parent.removeTask">Delete</a>
     </li>
 </ul>
@@ -22,38 +22,50 @@ You have <b data-bind="text: incompleteTasks().length">&nbsp;</b> incomplete tas
     <script src="~/signalr/hubs"></script>
     <script>
 
-    function Task(data) {
-        this.title = ko.observable(data.Title);
-        this.isDone = ko.observable(data.IsDone);
-        this.id = ko.observable(data.Id);
-    }
+        function Task(data) {
+            this.id = ko.observable(data.Id);
+            this.title = ko.observableRemote(data.Title, this.id);
+            this.isDone = ko.observable(data.IsDone);
+        }
 
-    function TaskListViewModel() {
-        // Data
-        var self = this;
-        self.tasks = ko.observableArray([]);
-        self.newTaskText = ko.observable();
-        self.incompleteTasks = ko.computed(function () {
-            return ko.utils.arrayFilter(self.tasks(), function (task) { return !task.isDone() && !task._destroy });
-        });
+        function TaskListViewModel() {
+            // Data
+            var self = this;
+            self.tasks = ko.observableArray([]);
+            self.newTaskText = ko.observable();
+            self.incompleteTasks = ko.computed(function () {
+                return ko.utils.arrayFilter(self.tasks(), function (task) { return !task.isDone() && !task._destroy });
+            });
 
-        // Operations
-        self.addTask = function () {
-            self.tasks.push(new Task({ title: this.newTaskText() }));
-            self.newTaskText("");
-        };
-        self.removeTask = function (task) {
-            self.tasks.destroy(task);
-        };
+            // Operations
+            self.addTask = function () {
+                self.tasks.push(new Task({ title: this.newTaskText() }));
+                self.newTaskText("");
+            };
 
-        // Load initial state from server, convert it to Task instances, then populate self.tasks
-        $.getJSON("api/tasks", function (allData) {
-            var mappedTasks = $.map(allData, function (item) { return new Task(item); });
-            self.tasks(mappedTasks);
-        });
-    }
+            self.removeTask = function (task) {
+                self.tasks.destroy(task);
+            };
 
-    ko.applyBindings(new TaskListViewModel());
-</script>
+            // Load initial state from server, convert it to Task instances, then populate self.tasks
+            $.getJSON("api/tasks", function (allData) {
+                var mappedTasks = $.map(allData, function (item) { return new Task(item); });
+                self.tasks(mappedTasks);
+            });
+
+            // this function will be called when everything is ready
+            self.init = function () {
+
+                // Remote called functions
+                self.client.addTask = function (task) {
+                    self.tasks.push(new Task(task));
+                };
+
+            };
+        }
+
+        ko.applyBindings(new TaskListViewModel());
+
+    </script>
 }
 
