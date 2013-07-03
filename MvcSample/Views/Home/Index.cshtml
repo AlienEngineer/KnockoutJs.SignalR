@@ -24,7 +24,7 @@ You have <b data-bind="text: incompleteTasks().length">&nbsp;</b> incomplete tas
 
         function Task(data) {
             this.id = ko.observable(data.Id);
-            this.title = ko.observableRemote(data.Title, this.id);
+            this.title = ko.observableRemote(data.Title, 'title', this.id);
             this.isDone = ko.observable(data.IsDone);
         }
 

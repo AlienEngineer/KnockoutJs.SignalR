@@ -13,8 +13,7 @@
 
     var applyBindings = ko.applyBindings;
 
-
-    ko.observableRemote = function(value, idObservable) {
+    ko.observableRemote = function(value, fieldName, idObservable) {
 
         var observable = ko.observable(value);
 
@@ -29,7 +28,8 @@
                     return;
                 }
 
-                console.log("The value changed to : " + newValue + " for ID : " + idObservable());
+
+                console.log("The field [" + fieldName + "] value changed to : " + newValue + " for ID : " + idObservable());
 
                 lastValue = newValue;
                 
