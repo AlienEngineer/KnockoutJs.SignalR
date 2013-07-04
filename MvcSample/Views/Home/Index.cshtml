@@ -31,7 +31,7 @@ You have <b data-bind="text: incompleteTasks().length">&nbsp;</b> incomplete tas
         function TaskListViewModel() {
             // Data
             var self = this;
-            self.tasks = ko.observableArray([]);
+            self.tasks = ko.observableArrayRemote([]);
             self.newTaskText = ko.observable();
             self.incompleteTasks = ko.computed(function () {
                 return ko.utils.arrayFilter(self.tasks(), function (task) { return !task.isDone() && !task._destroy });

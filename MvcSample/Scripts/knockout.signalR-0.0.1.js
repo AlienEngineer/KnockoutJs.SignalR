@@ -13,6 +13,32 @@
 
     var applyBindings = ko.applyBindings;
 
+    //
+    // Creates an observable that will send remote requests for array operations.
+    // (e.g. push, destroy)
+    //
+    ko.observableArrayRemote = function(array) {
+
+        var observable = ko.observableArray(array);
+        var push = observable.push;
+        var destroy = observable.destroy;
+        
+        observable.push = function(obj) {
+            push(obj);
+            
+        };
+        
+        observable.destroy = function (obj) {
+            destroy(obj);
+
+        };
+
+        return observable;
+    };
+
+    //
+    // Creates an observable that will send update requests for a single field.
+    //
     ko.observableRemote = function(value, fieldName, idObservable) {
 
         var observable = ko.observable(value);
@@ -40,7 +66,9 @@
         return observable;
     };
 
-    // Bypass the applyBindings
+    //
+    // Wrapper for applyBindings method.
+    //
     ko.applyBindings = function (viewModel, rootNode) {
 
         // Affects the viewmodel with the hub.
@@ -74,6 +102,8 @@
         viewModel.client = hub.client;
         viewModel.server = hub.server;
         
+        // Allows the users to initialize the ViewModel remote methods with a init function
+        // Another way is to call the applyRemoteOperations on the returned object by applyBindings
         if (typeof (viewModel.init) === "function") {
             viewModel.init();
         }
