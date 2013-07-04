@@ -22,16 +22,23 @@
         var observable = ko.observableArray(array);
         var push = observable.push;
         var destroy = observable.destroy;
+
+        observable.subscribe(function() {
+            console.log('array has changed!');
+        });
         
         observable.push = function(obj) {
-            push(obj);
-            
+            push.apply(this, [obj]);
+            console.log('push');
         };
         
         observable.destroy = function (obj) {
-            destroy(obj);
-
+            destroy.apply(this, [obj]);
+            console.log('destroy');
         };
+
+        // just to find this instance easier.
+        observable.isRemote = true;
 
         return observable;
     };
@@ -101,6 +108,15 @@
 
         viewModel.client = hub.client;
         viewModel.server = hub.server;
+
+        for (var field in viewModel) {
+            var obj = viewModel[field];
+            if (ko.isObservable(obj) && obj.isRemote) {
+
+                obj.server = viewModel.server;
+
+            }
+        }
         
         // Allows the users to initialize the ViewModel remote methods with a init function
         // Another way is to call the applyRemoteOperations on the returned object by applyBindings

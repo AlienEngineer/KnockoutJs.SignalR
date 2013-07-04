@@ -39,7 +39,7 @@ You have <b data-bind="text: incompleteTasks().length">&nbsp;</b> incomplete tas
 
             // Operations
             self.addTask = function () {
-                self.tasks.push(new Task({ title: this.newTaskText() }));
+                self.tasks.push(new Task({ Title: this.newTaskText() }));
                 self.newTaskText("");
             };
 
