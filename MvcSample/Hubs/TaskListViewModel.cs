@@ -17,5 +17,16 @@ namespace MvcSample.Hubs
                 .AllExcept(Context.ConnectionId)
                 .fieldChanged(id, fieldName, value);
         }
+
+        public void Add(Task task)
+        {
+            // Does something in the server side.
+            tasks.Post(task);
+
+            // Use signalR to sinchronize the remaining clients.
+            Clients
+                .AllExcept(Context.ConnectionId)
+                .push(task);
+        }
     }
 }

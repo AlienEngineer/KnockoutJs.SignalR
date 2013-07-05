@@ -1,4 +1,5 @@
 ﻿(function ($, ko) {
+    
     "use strict";
 
     if (typeof ($) !== "function") {
@@ -10,6 +11,22 @@
         // no KnockoutJs!
         throw new Error("KnockoutJS.SignalR: KnockoutJs not found. Please ensure KnockoutJs is referenced before the knockout.SignalR.js file.");
     }
+
+    var utils = {
+        firstLetterToLowerCase: function (str) {
+            return str[0].toLowerCase() + str.slice(1);
+        },
+        firstLetterToUpperCase: function (str) {
+            return str[0].toUpperCase() + str.slice(1);
+        },
+        capitalizeObj: function (obj) {
+            var result = { };
+            for (var field in obj) {
+                result[utils.firstLetterToUpperCase(field)] = obj[field]();
+            }
+            return result;
+        }
+    };
 
     var applyBindings = ko.applyBindings;
 
@@ -27,9 +44,15 @@
             console.log('array has changed!');
         });
         
-        observable.push = function(obj) {
-            push.apply(this, [obj]);
+        observable.push = function (obj, localOnly) {
             console.log('push');
+            push.apply(this, [obj]);
+            
+            if (localOnly) {
+                return;
+            }
+            
+            this.viewModel.server.add(utils.capitalizeObj(obj));
         };
         
         observable.destroy = function (obj) {
@@ -46,12 +69,16 @@
     //
     // Creates an observable that will send update requests for a single field.
     //
-    ko.observableRemote = function(value, fieldName, idObservable) {
+    ko.observableRemote = function(value, fieldName) {
 
         var observable = ko.observable(value);
 
         var timeoutId;
         var lastValue = value;
+
+        observable.mapFromServer = function (obj) {
+            return obj;
+        };
 
         observable.subscribe(function (newValue) {
             clearTimeout(timeoutId);
@@ -61,8 +88,8 @@
                     return;
                 }
 
-
-                console.log("The field [" + fieldName + "] value changed to : " + newValue + " for ID : " + idObservable());
+                
+                console.log("The field [" + fieldName + "] value changed to : " + newValue);
 
                 lastValue = newValue;
                 
@@ -93,7 +120,20 @@
         return null;
     };
 
+    var initializeRemoteObservableArray = function (observable) {
 
+        var client = observable.viewModel.client;
+
+        // adds the push function
+        client.push = function(obj) {
+            observable.push(
+                observable.mapFromServer(obj), /* the value to be pushed */
+                true /* localOnly */
+            );
+        };
+
+    };
+    
     // Affects the viewmodel with the hub.
     // Starts the connection.
     var initializeViewModel = function(viewModel) {
@@ -109,12 +149,13 @@
         viewModel.client = hub.client;
         viewModel.server = hub.server;
 
+        // Sets the ViewModel to the remote observable
         for (var field in viewModel) {
             var obj = viewModel[field];
             if (ko.isObservable(obj) && obj.isRemote) {
+                obj.viewModel = viewModel;
 
-                obj.server = viewModel.server;
-
+                initializeRemoteObservableArray(obj);
             }
         }
         

@@ -18,12 +18,14 @@ namespace MvcSample.Controllers
 
         static TasksController()
         {
-            for (int i = 1; i <= 10; i++)
+            var i = 1;
+            for (; i <= 1; i++)
             {
                 _tasks.Add(i,
                     new Task { Id = i, IsDone = i % 2 == 0, Title = "Task " + i }
                 );
             }
+            lastId = i;
         }
 
         // GET api/<controller>
@@ -39,12 +41,16 @@ namespace MvcSample.Controllers
         }
 
         // POST api/<controller>
-        public void Post([FromBody]string value)
+        public void Post(Task task)
         {
-            _tasks.Add(
-                ++lastId,
-                new Task { Id = lastId, IsDone = false, Title = value }
-             );
+            lock (_tasks)
+            {
+                _tasks.Add(
+                    ++lastId,
+                    task
+                );
+                task.Id = lastId;
+            }
         }
 
         // PUT api/<controller>/5

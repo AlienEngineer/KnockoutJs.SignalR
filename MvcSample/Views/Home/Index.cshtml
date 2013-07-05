@@ -24,7 +24,7 @@ You have <b data-bind="text: incompleteTasks().length">&nbsp;</b> incomplete tas
 
         function Task(data) {
             this.id = ko.observable(data.Id);
-            this.title = ko.observableRemote(data.Title, 'title', this.id);
+            this.title = ko.observableRemote(data.Title, 'title');
             this.isDone = ko.observable(data.IsDone);
         }
 
@@ -53,14 +53,9 @@ You have <b data-bind="text: incompleteTasks().length">&nbsp;</b> incomplete tas
                 self.tasks(mappedTasks);
             });
 
-            // this function will be called when everything is ready
-            self.init = function () {
-
-                // Remote called functions
-                self.client.addTask = function (task) {
-                    self.tasks.push(new Task(task));
-                };
-
+            // Append a function to map an obj that is received from the server.
+            self.tasks.mapFromServer = function (obj) {
+                return new Task(obj);
             };
         }
 
