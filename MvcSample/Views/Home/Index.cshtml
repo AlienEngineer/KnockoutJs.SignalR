@@ -34,7 +34,7 @@ You have <b data-bind="text: incompleteTasks().length">&nbsp;</b> incomplete tas
             self.tasks = ko.observableArrayRemote([]);
             self.newTaskText = ko.observable();
             self.incompleteTasks = ko.computed(function () {
-                return ko.utils.arrayFilter(self.tasks(), function (task) { return !task.isDone() && !task._destroy });
+                return ko.utils.arrayFilter(self.tasks(), function (task) { return !task.isDone() && !task._destroy; });
             });
 
             // Operations
@@ -53,7 +53,7 @@ You have <b data-bind="text: incompleteTasks().length">&nbsp;</b> incomplete tas
                 self.tasks(mappedTasks);
             });
 
-            // Append a function to map an obj that is received from the server.
+            // Change the function that maps an obj received from the server.
             self.tasks.mapFromServer = function (obj) {
                 return new Task(obj);
             };

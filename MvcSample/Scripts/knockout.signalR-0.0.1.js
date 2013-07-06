@@ -22,9 +22,41 @@
         capitalizeObj: function (obj) {
             var result = { };
             for (var field in obj) {
-                result[utils.firstLetterToUpperCase(field)] = obj[field]();
+                result[utils.firstLetterToUpperCase(field)] = utils.getValue(obj[field]);
             }
             return result;
+        },
+        compareObj: function (obj1, obj2) {
+            for (var field in obj1) {
+                var value1 = obj1[field];
+                var value2 = obj2[field];
+
+                if (utils.getValue(value1) !== utils.getValue(value2)) {
+                    return false;
+                }
+            }
+            return true;
+        },
+        syncObj: function (target, data) {
+            for (var field in target) {
+                var field1 = target[field];
+                var field2 = utils.getValue( data[utils.firstLetterToUpperCase(field)]);
+
+                if (utils.getValue(field1) !== field2) {
+                    if (typeof field1 === "function") {
+                        field1(field2);
+                    }
+                    else {
+                        target[field] = field2;
+                    }
+                }
+            }
+        },
+        getValue: function(val) {
+            if (typeof val === "function") {
+                return val();
+            }
+            return val;
         }
     };
 
@@ -52,12 +84,25 @@
                 return;
             }
             
-            this.viewModel.server.add(utils.capitalizeObj(obj));
+            this.viewModel.server.add(utils.capitalizeObj(obj))
+                .done(function (data) {
+                    utils.syncObj(obj, data);
+                });
         };
         
-        observable.destroy = function (obj) {
-            destroy.apply(this, [obj]);
+        observable.destroy = function (obj, localOnly) {
             console.log('destroy');
+            destroy.apply(this, [function (value) {
+
+                return utils.compareObj(obj, value);
+
+            }]);
+            
+            if (localOnly) {
+                return;
+            }
+            
+            this.viewModel.server.remove(utils.capitalizeObj(obj));
         };
 
         // just to find this instance easier.
@@ -132,6 +177,12 @@
             );
         };
 
+        client.destroy = function(obj) {
+            observable.destroy(
+                observable.mapFromServer(obj), /* the value to be pushed */
+                true /* localOnly */
+            );
+        };
     };
     
     // Affects the viewmodel with the hub.

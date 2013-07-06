@@ -18,15 +18,28 @@ namespace MvcSample.Hubs
                 .fieldChanged(id, fieldName, value);
         }
 
-        public void Add(Task task)
+        public Task Add(Task task)
         {
             // Does something in the server side.
-            tasks.Post(task);
+            task = tasks.Post(task); 
 
             // Use signalR to sinchronize the remaining clients.
             Clients
                 .AllExcept(Context.ConnectionId)
                 .push(task);
+
+            return task;
+        }
+
+        public void Remove(Task task)
+        {
+            // Does something in the server side.
+            tasks.Delete(task.Id);
+
+            // Use signalR to sinchronize the remaining clients.
+            Clients
+                .AllExcept(Context.ConnectionId)
+                .destroy(task);
         }
     }
 }

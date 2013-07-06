@@ -41,7 +41,7 @@ namespace MvcSample.Controllers
         }
 
         // POST api/<controller>
-        public void Post(Task task)
+        public Task Post(Task task)
         {
             lock (_tasks)
             {
@@ -51,6 +51,7 @@ namespace MvcSample.Controllers
                 );
                 task.Id = lastId;
             }
+            return task;
         }
 
         // PUT api/<controller>/5
