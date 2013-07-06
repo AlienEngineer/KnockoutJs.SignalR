@@ -13,7 +13,7 @@ The idea for this project is to be able to use SignalR in combination with Knock
 ```JavaScript
 
   // The Remote Observable Array to sincronize operations.
-  // (e.g. push)
+  // (e.g. push, destroy)
   self.tasks = ko.observableArrayRemote([]);
 
   // Because the objs on the server and the client won't match we need a map function.
