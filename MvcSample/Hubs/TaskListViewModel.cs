@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.SignalR;
+﻿using System.Collections.Generic;
+using Microsoft.AspNet.SignalR;
 using MvcSample.Controllers;
 
 namespace MvcSample.Hubs
@@ -16,6 +17,11 @@ namespace MvcSample.Hubs
             Clients
                 .AllExcept(Context.ConnectionId)
                 .fieldChanged(id, fieldName, value);
+        }
+
+        public IEnumerable<Task> GetAll()
+        {
+            return tasks.Get();
         }
 
         public Task Add(Task task)

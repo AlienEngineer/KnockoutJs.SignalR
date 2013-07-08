@@ -76,6 +76,10 @@
         var push = observable.push;
         var destroy = observable.destroy;
 
+        observable.mapFromServer = function (obj) {
+            return obj;
+        };
+
         observable.subscribe(function() {
             console.log('array has changed!');
         });
@@ -125,9 +129,7 @@
         var timeoutId;
         var lastValue = value;
 
-        observable.mapFromServer = function (obj) {
-            return obj;
-        };
+        
 
         observable.subscribe(function (newValue) {
             clearTimeout(timeoutId);
@@ -154,10 +156,10 @@
     //
     ko.applyBindings = function (viewModel, rootNode) {
 
+        applyBindings(viewModel, rootNode);
+        
         // Affects the viewmodel with the hub.
         var initiated = initializeViewModel(viewModel);
-        
-        applyBindings(viewModel, rootNode);
         
         if (initiated) {
             return {
@@ -171,6 +173,7 @@
 
     //
     // Appends functions to the view model client hub.
+    // Populates the array with server objects.
     //
     var initializeRemoteObservableArray = function (observable) {
 
@@ -191,6 +194,15 @@
                 true /* localOnly */
             );
         };
+
+        // Initializes the array with the server values.
+        observable.viewModel.server.getAll().done(function (values) {
+            
+            var mappedValues = $.map(values, function (item) { return observable.mapFromServer(item); });
+
+            observable(mappedValues);
+            
+        });
     };
     
     // Affects the viewmodel with the hub.
@@ -208,6 +220,8 @@
         viewModel.client = hub.client;
         viewModel.server = hub.server;
 
+        $.connection.hub.start();
+        
         // Sets the ViewModel to the remote observable
         for (var field in viewModel) {
             var obj = viewModel[field];
@@ -224,7 +238,7 @@
             viewModel.init();
         }
 
-        $.connection.hub.start();
+        
         return true;
     };
 
