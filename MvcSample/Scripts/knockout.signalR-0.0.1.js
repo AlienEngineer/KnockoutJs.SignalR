@@ -19,6 +19,7 @@
         firstLetterToUpperCase: function (str) {
             return str[0].toUpperCase() + str.slice(1);
         },
+        // Creates an object with capitablized initials. To match object on the server hub side.
         capitalizeObj: function (obj) {
             var result = { };
             for (var field in obj) {
@@ -26,6 +27,7 @@
             }
             return result;
         },
+        // Compares two objects field values.
         compareObj: function (obj1, obj2) {
             for (var field in obj1) {
                 var value1 = obj1[field];
@@ -37,6 +39,7 @@
             }
             return true;
         },
+        // Sincronizes target with data.
         syncObj: function (target, data) {
             for (var field in target) {
                 var field1 = target[field];
@@ -52,6 +55,7 @@
                 }
             }
         },
+        // Gets the primitive value of argument. In case of a function.
         getValue: function(val) {
             if (typeof val === "function") {
                 return val();
@@ -165,6 +169,9 @@
         return null;
     };
 
+    //
+    // Appends functions to the view model client hub.
+    //
     var initializeRemoteObservableArray = function (observable) {
 
         var client = observable.viewModel.client;
@@ -177,6 +184,7 @@
             );
         };
 
+        // adds the destroy function
         client.destroy = function(obj) {
             observable.destroy(
                 observable.mapFromServer(obj), /* the value to be pushed */
