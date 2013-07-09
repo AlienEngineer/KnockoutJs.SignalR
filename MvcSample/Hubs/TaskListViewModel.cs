@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNet.SignalR;
 using MvcSample.Controllers;
 
 namespace MvcSample.Hubs
 {
-    public class TaskListViewModel : Hub
+    public class TaskListViewModel : SynchronizerHub<Task>
     {
         private readonly TasksController tasks = new TasksController();
 
@@ -20,33 +19,20 @@ namespace MvcSample.Hubs
                 .fieldChanged(id, fieldName, value);
         }
 
-        public IEnumerable<Task> GetAll()
+        public override IEnumerable<Task> GetAll()
         {
             return tasks.Get().OrderBy(e => e.Id);
         }
 
-        public Task Add(Task task)
+        protected override void OnRemove(Task entity)
         {
-            // Does something in the server side.
-            task = tasks.Post(task); 
-
-            // Use signalR to sinchronize the remaining clients.
-            Clients
-                .AllExcept(Context.ConnectionId)
-                .push(task);
-
-            return task;
+            tasks.Delete(entity.Id);
         }
 
-        public void Remove(Task task)
+        protected override Task OnAdd(Task entity)
         {
-            // Does something in the server side.
-            tasks.Delete(task.Id);
-
-            // Use signalR to sinchronize the remaining clients.
-            Clients
-                .AllExcept(Context.ConnectionId)
-                .destroy(task);
+            return tasks.Post(entity);
         }
+
     }
 }
