@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNet.SignalR;
 using MvcSample.Controllers;
 
@@ -21,7 +22,7 @@ namespace MvcSample.Hubs
 
         public IEnumerable<Task> GetAll()
         {
-            return tasks.Get();
+            return tasks.Get().OrderBy(e => e.Id);
         }
 
         public Task Add(Task task)

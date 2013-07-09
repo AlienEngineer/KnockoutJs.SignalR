@@ -168,6 +168,9 @@
                 }
             };
         }
+        
+
+
         return null;
     };
 
@@ -195,14 +198,20 @@
             );
         };
 
-        // Initializes the array with the server values.
-        observable.viewModel.server.getAll().done(function (values) {
+        // When the connection state is good load the values into the array.
+        // $.connection.hub.start().done(...) is beeing called before the state is connected.
+        $.connection.hub.stateChanged(function () {
+            if ($.connection.connectionState.connected !== $.connection.hub.state) {
+                return;
+            }
             
-            var mappedValues = $.map(values, function (item) { return observable.mapFromServer(item); });
-
-            observable(mappedValues);
+            observable.viewModel.server.getAll().done(function (values) {
+                var mappedValues = $.map(values, function (item) { return observable.mapFromServer(item); });
+                observable(mappedValues);
+            });
             
         });
+        
     };
     
     // Affects the viewmodel with the hub.
@@ -219,9 +228,8 @@
 
         viewModel.client = hub.client;
         viewModel.server = hub.server;
-
         $.connection.hub.start();
-        
+
         // Sets the ViewModel to the remote observable
         for (var field in viewModel) {
             var obj = viewModel[field];
