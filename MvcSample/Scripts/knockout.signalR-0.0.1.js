@@ -92,6 +92,7 @@
                 return;
             }
             
+            // TODO: handle fails onAdd
             this.viewModel.server.add(utils.capitalizeObj(obj))
                 .done(function (data) {
                     utils.syncObj(obj, data);
@@ -110,6 +111,7 @@
                 return;
             }
             
+            // TODO: handle fails onRemove
             this.viewModel.server.remove(utils.capitalizeObj(obj));
         };
 
