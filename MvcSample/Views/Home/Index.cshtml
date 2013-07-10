@@ -47,12 +47,6 @@ You have <b data-bind="text: incompleteTasks().length">&nbsp;</b> incomplete tas
                 self.tasks.destroy(task);
             };
 
-            // Load initial state from server, convert it to Task instances, then populate self.tasks
-            //$.getJSON("api/tasks", function (allData) {
-            //    var mappedTasks = $.map(allData, function (item) { return new Task(item); });
-            //    self.tasks(mappedTasks);
-            //});
-
             // Change the function that maps an obj received from the server.
             self.tasks.mapFromServer = function (obj) {
                 return new Task(obj);
