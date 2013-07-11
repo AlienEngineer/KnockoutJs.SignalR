@@ -10,6 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{4F0710
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MvcSample", "MvcSample\MvcSample.csproj", "{73282CDF-E631-45A0-B7A7-9725CC1E8C64}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KnockoutJs.SignalR", "KnockoutJs.SignalR\KnockoutJs.SignalR.csproj", "{077AE721-4695-41DF-80FE-35D24B142903}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,6 +22,10 @@ Global
 		{73282CDF-E631-45A0-B7A7-9725CC1E8C64}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{73282CDF-E631-45A0-B7A7-9725CC1E8C64}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{73282CDF-E631-45A0-B7A7-9725CC1E8C64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{077AE721-4695-41DF-80FE-35D24B142903}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{077AE721-4695-41DF-80FE-35D24B142903}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{077AE721-4695-41DF-80FE-35D24B142903}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{077AE721-4695-41DF-80FE-35D24B142903}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

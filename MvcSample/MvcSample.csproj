@@ -185,7 +185,6 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Hubs\SynchronizerHub.cs" />
     <Compile Include="Hubs\TaskListViewModel.cs" />
     <Compile Include="Models\AccountModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -310,6 +309,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\KnockoutJs.SignalR\KnockoutJs.SignalR.csproj">
+      <Project>{077ae721-4695-41df-80fe-35d24b142903}</Project>
+      <Name>KnockoutJs.SignalR</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

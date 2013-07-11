@@ -51,6 +51,10 @@ You have <b data-bind="text: incompleteTasks().length">&nbsp;</b> incomplete tas
             self.tasks.mapFromServer = function (obj) {
                 return new Task(obj);
             };
+
+            self.tasks.compare = function(task1, task2) {
+                return task1.id() === task2.id();
+            };
         }
 
         ko.applyBindings(new TaskListViewModel());

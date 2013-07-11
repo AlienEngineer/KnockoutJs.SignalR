@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Microsoft.AspNet.SignalR;
 
-namespace MvcSample.Hubs
+namespace KnockoutJs.SignalR
 {
     /// <summary>
     /// Base type to implement a knockoutJs Sincronizer
@@ -20,6 +20,15 @@ namespace MvcSample.Hubs
         }
 
         public abstract IEnumerable<TEntity> GetAll();
+
+        public TEntity Update(TEntity entity, string fieldName)
+        {
+            var result = OnUpdate(entity, fieldName);
+
+            Broadcast().update(entity, fieldName);
+
+            return result;
+        }
 
         public TEntity Add(TEntity entity)
         {
@@ -48,5 +57,13 @@ namespace MvcSample.Hubs
         /// <param name="entity">The entity.</param>
         /// <returns></returns>
         protected abstract TEntity OnAdd(TEntity entity);
+
+        /// <summary>
+        /// Called when [update].
+        /// </summary>
+        /// <param name="entity">The entity.</param>
+        /// <param name="fieldName">Name of the field.</param>
+        /// <returns></returns>
+        protected abstract TEntity OnUpdate(TEntity entity, string fieldName);
     }
 }
