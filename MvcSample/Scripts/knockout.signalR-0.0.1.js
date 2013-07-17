@@ -12,6 +12,8 @@
         throw new Error("KnockoutJS.SignalR: KnockoutJs not found. Please ensure KnockoutJs is referenced before the knockout.SignalR.js file.");
     }
 
+    var UPDATE_FIELD_DELAY = 250;
+
     var utils = {
         firstLetterToLowerCase: function (str) {
             return str[0].toLowerCase() + str.slice(1);
@@ -117,7 +119,7 @@
             }
             
             // request the server to add
-            // TODO: handle fails onAdd
+            // TODO: handle fails onAdd. needs testing.
             this.viewModel.server.add(utils.capitalizeObj(obj))
                 .done(function (data) {
                     utils.syncObj(obj, data);
@@ -141,7 +143,7 @@
             }
             
             // request the server to remove
-            // TODO: handle fails onRemove
+            // TODO: handle fails onRemove. needs testing.
             this.viewModel.server.remove(utils.capitalizeObj(obj))
                 .fail(function () {
                     push.apply(observable, [obj]);
@@ -167,6 +169,11 @@
         observable.subscribe(function (newValue) {
             clearTimeout(timeoutId);
 
+            if (observable.remoteChange) {
+                console.log('UPDATE: called remotly : ' + newValue);
+                return;
+            }
+
             timeoutId = setTimeout(function () {
                 if (lastValue === newValue) {
                     return;
@@ -175,16 +182,20 @@
 
                 var viewModel = self.owner.observableArray.viewModel;
 
+                
+                console.log('UPDATE: sending : ' + newValue);
                 // requests the update change on the server.
                 // capitalizes the object fields and fieldName
                 viewModel.server.update(
                     utils.capitalizeObj(self.owner),
                     utils.firstLetterToUpperCase(fieldName)
-                );
+                ).done(function() {
+                    console.log('UPDATE: sent : ' + newValue);
+                });
 
                 lastValue = newValue;
                 
-            }, 50);
+            }, UPDATE_FIELD_DELAY);
             
         });
         
@@ -256,10 +267,14 @@
                 if (observable.compare(obj, arr[i])) {
 
                     // Todo: this is calling the subscriber.. Add some state variable...
+                    arr[i][fieldName].remoteChange = true;
                     
                     arr[i][fieldName](
                         obj[fieldName]()
                     );
+                    
+                    arr[i][fieldName].remoteChange = false;
+                    
                     return;
                 }
 
