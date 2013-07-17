@@ -7,12 +7,27 @@
  */
 (function ($, ko) {
 
-    var SyncManager = function () {
-        
+    var SyncManager = function (synchronizers) {
+        this.synchronizers = synchronizers || [];
     };
 
     SyncManager.prototype = {
-        
+        // registers the synchronizer to the list of synchronizers.
+        register: function (synchronizer) {
+            this.synchronizers.push(synchronizer);
+        },
+        // Attach the synchronizers that are able to sync operations in the observable.
+        attachTo: function (observable) {
+            for (var i = 0; i < this.synchronizers.length; i++) {
+
+                var current = this.synchronizers[i];
+                
+                if (current.shouldAttach(observable)) {
+                    current.attach(observable);
+                }
+                
+            }
+        }
     };
 
     ko.remoteObservableArray = function(array) {
