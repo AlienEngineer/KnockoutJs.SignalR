@@ -266,7 +266,7 @@
                 
                 if (observable.compare(obj, arr[i])) {
 
-                    // Todo: this is calling the subscriber.. Add some state variable...
+                    // switch the state of the observable so the subscriber wont sync it.
                     arr[i][fieldName].remoteChange = true;
                     
                     arr[i][fieldName](

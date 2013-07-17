@@ -11,7 +11,9 @@ namespace MvcSample
                         "~/Scripts/jquery-{version}.js",
                         "~/Scripts/jquery.signalR-{version}.js",
                         "~/Scripts/knockout-{version}.js",
-                        "~/Scripts/knockout.signalR-{version}.js"));
+                        "~/Scripts/knockout.signalR-{version}.js",
+                        "~/Scripts/Knockout.SignalR/knockoutjs.signalR.synchronizer.js",
+                        "~/Scripts/Knockout.SignalR/knockoutjs.signalR.observables.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/jqueryui").Include(
                         "~/Scripts/jquery-ui-{version}.js"));
