@@ -11,7 +11,7 @@
         this.synchronizers = synchronizers || [];
     };
 
-    SyncManager.prototype = {
+    SyncManager.fn = SyncManager.prototype = {
         // registers the synchronizer to the list of synchronizers.
         register: function (synchronizer) {
             this.synchronizers.push(synchronizer);
@@ -54,6 +54,21 @@
         return observable;
 
     };
+    
+    //
+    // Creates an observable that will send update requests for a single field.
+    //
+    ko.observableRemote = function (value, fieldName) {
+
+        var observable = ko.observable(value);
+
+        observable.previous = value;
+        observable.fieldName = fieldName;
+        observable.isRemote = true;
+
+        return observable;
+    };
+
 
     window.SyncManager = new SyncManager();
 
