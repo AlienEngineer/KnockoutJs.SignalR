@@ -106,6 +106,7 @@
         ks.fn.forEachRemoteMember(viewModel, function () {
             this.viewModel = viewModel;
             initializeRemoteObservableArray(this);
+            SyncManager.attachTo(this);
         });
 
         // Allows the users to initialize the ViewModel remote methods with a init function
@@ -113,7 +114,6 @@
         if (typeof (viewModel.init) === "function") {
             viewModel.init();
         }
-
 
         return true;
     },

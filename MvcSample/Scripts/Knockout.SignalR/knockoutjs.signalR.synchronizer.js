@@ -31,7 +31,7 @@
             throw { message: name + " object does not have a ref for the method name." };
         }
 
-        if (!syncObj.handler || typeof syncUp.handler !== "function") {
+        if (!syncObj.handler || typeof syncObj.handler !== "function") {
             throw { message: name + " object does not have a proper ref for a handler." };
         }
     },

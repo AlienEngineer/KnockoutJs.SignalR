@@ -48,8 +48,8 @@
 
             return true;
         };
-        
-        observable.isRemote = true;
+
+        observable.isRemoteArray = observable.isRemote = true;
 
         return observable;
 
