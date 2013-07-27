@@ -37,7 +37,7 @@
     },
     {
         push: function () {
-
+            console.log('called this from server.');
         }
 
     }, isRemoteArray);

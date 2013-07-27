@@ -16,7 +16,7 @@
     };
 
     String.prototype.charToUpperCase = function () {
-        return this[0].toLowerCase() + this.slice(1, this.length);
+        return this[0].toUpperCase() + this.slice(1, this.length);
     };
 
     ks.fn = ks.prototype = {
