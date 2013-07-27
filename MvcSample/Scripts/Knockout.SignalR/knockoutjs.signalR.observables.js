@@ -14,23 +14,31 @@
     SyncManager.fn = SyncManager.prototype = {
         // registers the synchronizer to the list of synchronizers.
         register: function (synchronizer) {
+
             this.synchronizers.push(synchronizer);
+
+        },
+        makeSyncObj: function (method, handler) {
+            return {
+                method: method,
+                handler: handler
+            };
         },
         // Attach the synchronizers that are able to sync operations in the observable.
         attachTo: function (observable) {
             for (var i = 0; i < this.synchronizers.length; i++) {
 
                 var current = this.synchronizers[i];
-                
+
                 if (current.shouldAttach(observable)) {
                     current.attach(observable);
                 }
-                
+
             }
         }
     };
 
-    ko.remoteObservableArray = function(array) {
+    ko.remoteObservableArray = function (array) {
 
         var observable = ko.observableArray(array);
 
@@ -54,7 +62,7 @@
         return observable;
 
     };
-    
+
     //
     // Creates an observable that will send update requests for a single field.
     //

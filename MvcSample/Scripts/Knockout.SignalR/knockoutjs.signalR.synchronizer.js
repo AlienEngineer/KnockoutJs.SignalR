@@ -21,44 +21,43 @@
 
         return this;
     },
-    // Validates that the syncObj has the required fields.
-    validateSyncObject = function (syncObj, name) {
-        if (!syncObj) {
-            throw { message: "No " + name + " object was found." };
+    argsToArray = function (args) {
+        var arr = [];
+        for (var i = 0; i < args.length; i++) {
+            arr.push(args[i]);
         }
-
-        if (!syncObj.method) {
-            throw { message: name + " object does not have a ref for the method name." };
-        }
-
-        if (!syncObj.handler || typeof syncObj.handler !== "function") {
-            throw { message: name + " object does not have a proper ref for a handler." };
-        }
+        return arr;
     },
 
-    // Wrap a function of the observable.
+    // Wrap functions of the observable.
     attachSyncUp = function (syncUp, observable) {
-        validateSyncObject(syncUp, "syncUp");
-
-        var oldMethod = observable[syncUp.method];
-
-        observable[syncUp.method] = function () {
-            return syncUp.handler.apply(this, arguments.concat([oldMethod, observable]));
-        };
-
+        
+        for (var handler in syncUp) {
+        
+            var oldMethod = observable[handler];
+            
+            observable[handler] = function () {
+                var args = argsToArray(arguments).concat([false, oldMethod, observable]);
+                return syncUp[handler].apply(this, args);
+            };
+            
+        }
+        
     },
 
-    // Append a function to handle the server side hub calls.
+    // Append functions to handle the server side hub calls.
     // The server hub on js should be available as a field observable
     attachSyncDown = function (syncDown, observable) {
-        validateSyncObject(syncDown, "syncDown");
-
+        
         var client = observable.viewModel.client;
+        
+        for (var handler in syncDown) {
 
-        client[syncDown.method] = function () {
-            return syncDown.handler.apply(observable, arguments);
-        };
-
+            client[handler] = function () {
+                return syncDown[handler].apply(observable, arguments);
+            };
+        }
+        
     };
 
     Synchronizer.fn = Synchronizer.prototype = {

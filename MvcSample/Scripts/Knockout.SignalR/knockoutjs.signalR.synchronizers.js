@@ -7,37 +7,48 @@
  */
 (function ($, ko) {
 
-    SyncManager.register(
-        new Synchronizer({
-            method: "push",
-            handler: function (obj, localOnly, push, observable) {
-                // prepares the received obj
-                prepareElement(obj, observable);
+    var synchronizers = [],
+        isRemoteArray = function (o) { return o.isRemoteArray; },
+        isRemote = function (o) { return o.isRemote && !o.isRemoteArray; };
 
-                console.log('push');
-                // push the value to the array.
-                push.apply(this, [obj]);
+    var pushSync = new Synchronizer({
+        push: function (obj, localOnly, push, observable) {
+            // prepares the received obj
+            ks.prepareElement(obj, observable);
 
-                if (localOnly) {
-                    return;
-                }
+            console.log('push');
+            // push the value to the array.
+            push.apply(this, [obj]);
 
-                // request the server to add
-                // TODO: handle fails onAdd. needs testing.
-                this.viewModel.server.add(ks.capitalizeObj(obj))
-                    .done(function (data) {
-                        ks.syncObj(obj, data);
-                    })
-                    .fail(function () {
-                        destroy.apply(observable, [obj]);
-                    });
+            if (localOnly) {
+                return;
             }
-        }, {
-            
-        }, function (observable) {
-            return observable.isRemoteArray;
-        })
-    );
 
-    
+            // request the server to add
+            // TODO: handle fails onAdd. needs testing.
+            this.viewModel.server.add(ks.capitalizeObj(obj))
+                .done(function (data) {
+                    ks.syncObj(obj, data);
+                })
+                .fail(function () {
+                    destroy.apply(observable, [obj]);
+                });
+        }
+    },
+    {
+        push: function () {
+
+        }
+
+    }, isRemoteArray);
+
+
+    synchronizers.push(pushSync);
+
+
+    // Register all synchronizers.
+    for (var i = 0; i < synchronizers.length; i++) {
+        SyncManager.register(synchronizers[i]);
+    }
+
 })(jQuery, ko);

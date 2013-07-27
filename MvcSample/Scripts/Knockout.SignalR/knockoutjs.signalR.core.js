@@ -52,7 +52,11 @@
         syncObj: function (target, data) {
             for (var field in target) {
                 var field1 = target[field];
-                var field2 = ks.getValue(data[field.charToUpperCase(0)]);
+                var field2 = ks.fn.getValue(data[field.charToUpperCase(0)]);
+
+                if (field2 === undefined) {
+                    continue;
+                }
 
                 if (ks.fn.getValue(field1) !== field2) {
                     if (typeof field1 === "function") {
