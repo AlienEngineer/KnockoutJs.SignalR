@@ -11,6 +11,7 @@
         isRemoteArray = function (o) { return o.isRemoteArray; },
         isRemote = function (o) { return o.isRemote && !o.isRemoteArray; };
 
+    // Synchronizer for the observable push method.
     var pushSync = new Synchronizer({
         push: function (obj, localOnly, push, observable) {
             // prepares the received obj
@@ -36,7 +37,16 @@
         }
     },
     {
-        push: function () {
+        push: function (obj) {
+            var observable = this;
+            
+            // prepares the received obj
+            ks.prepareElement(obj, observable);
+
+            observable.push(
+                observable.mapFromServer(obj), /* the value to be pushed */
+                true /* localOnly */
+            );
             console.log('called this from server.');
         }
 

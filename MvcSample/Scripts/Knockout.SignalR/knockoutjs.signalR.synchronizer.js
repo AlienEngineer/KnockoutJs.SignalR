@@ -37,7 +37,9 @@
             var oldMethod = observable[handler];
             
             observable[handler] = function () {
-                var args = argsToArray(arguments).concat([false, oldMethod, observable]);
+                var arr = typeof arguments[1] !== "boolean" ? [false, oldMethod, observable] : [oldMethod, observable];
+
+                var args = argsToArray(arguments).concat(arr);
                 return syncUp[handler].apply(this, args);
             };
             
