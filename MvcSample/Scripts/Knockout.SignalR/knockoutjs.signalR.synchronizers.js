@@ -12,45 +12,47 @@
         isRemote = function (o) { return o.isRemote && !o.isRemoteArray; };
 
     // Synchronizer for the observable push method.
-    var pushSync = new Synchronizer({
-        push: function (obj, localOnly, push, observable) {
-            // prepares the received obj
-            ks.prepareElement(obj, observable);
+    var pushSync = new Synchronizer(
+        // Object with methods to wrap the original knockout methods.
+        {
+            push: function (obj, localOnly, push, observable) {
+                // prepares the received obj
+                ks.prepareElement(obj, observable);
 
-            console.log('push');
-            // push the value to the array.
-            push.apply(this, [obj]);
+                console.log('push');
+                // push the value to the array.
+                push.apply(this, [obj]);
 
-            if (localOnly) {
-                return;
+                if (localOnly) {
+                    return;
+                }
+
+                // request the server to add
+                // TODO: handle fails onAdd. needs testing.
+                this.viewModel.server.add(ks.capitalizeObj(obj))
+                    .done(function (data) {
+                        ks.syncObj(obj, data);
+                    })
+                    .fail(function () {
+                        destroy.apply(observable, [obj]);
+                    });
             }
+        },
+        // Object with methods to be called remotly.
+        {
+            push: function (obj) {
+                var observable = this;
 
-            // request the server to add
-            // TODO: handle fails onAdd. needs testing.
-            this.viewModel.server.add(ks.capitalizeObj(obj))
-                .done(function (data) {
-                    ks.syncObj(obj, data);
-                })
-                .fail(function () {
-                    destroy.apply(observable, [obj]);
-                });
-        }
-    },
-    {
-        push: function (obj) {
-            var observable = this;
-            
-            // prepares the received obj
-            ks.prepareElement(obj, observable);
+                // prepares the received obj
+                ks.prepareElement(obj, observable);
 
-            observable.push(
-                observable.mapFromServer(obj), /* the value to be pushed */
-                true /* localOnly */
-            );
-            console.log('called this from server.');
-        }
-
-    }, isRemoteArray);
+                observable.push(
+                    observable.mapFromServer(obj), /* the value to be pushed */
+                    true /* localOnly */
+                );
+                console.log('called this from server.');
+            }
+        }, isRemoteArray);
 
 
     synchronizers.push(pushSync);
