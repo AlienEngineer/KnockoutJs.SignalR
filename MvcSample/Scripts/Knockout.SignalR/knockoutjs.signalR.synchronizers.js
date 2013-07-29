@@ -36,6 +36,27 @@
                     .fail(function () {
                         destroy.apply(observable, [obj]);
                     });
+            },
+            destroy: function (obj, localOnly, destroy, observable) {
+                console.log('destroy');
+                // destroy the value from the array
+                destroy.apply(this, [function (value) {
+
+                    return ks.compareObj(obj, value);
+
+                }]);
+
+                if (localOnly) {
+                    return;
+                }
+
+                // request the server to remove
+                // TODO: handle fails onRemove. needs testing.
+                this.viewModel.server.remove(utils.capitalizeObj(obj))
+                    .fail(function () {
+                        // Not the best choise.
+                        push.apply(observable, [obj]);
+                    });
             }
         },
         // Object with methods to be called remotly.
@@ -51,6 +72,12 @@
                     true /* localOnly */
                 );
                 console.log('called this from server.');
+            },
+            destroy: function (obj) {
+                observable.destroy(
+                    observable.mapFromServer(obj), /* the value to be pushed */
+                    true /* localOnly */
+                );
             }
         }, isRemoteArray);
 
