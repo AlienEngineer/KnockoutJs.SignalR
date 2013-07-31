@@ -35,12 +35,14 @@
         for (var handler in syncUp) {
         
             var oldMethod = observable[handler];
-            
+            // Context capture
+            var func = syncUp[handler];
+
             observable[handler] = function () {
                 var arr = typeof arguments[1] !== "boolean" ? [false, oldMethod, observable] : [oldMethod, observable];
 
                 var args = argsToArray(arguments).concat(arr);
-                return syncUp[handler].apply(this, args);
+                return func.apply(this, args);
             };
             
         }
@@ -54,9 +56,11 @@
         var client = observable.viewModel.client;
         
         for (var handler in syncDown) {
-
+            // Context capture
+            var func = syncDown[handler];
+            
             client[handler] = function () {
-                return syncDown[handler].apply(observable, arguments);
+                return func.apply(observable, arguments);
             };
         }
         
