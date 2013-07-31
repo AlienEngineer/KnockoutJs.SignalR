@@ -20,42 +20,48 @@
                 ks.prepareElement(obj, observable);
 
                 console.log('push');
-                // push the value to the array.
-                push.apply(this, [obj]);
-
+                
                 if (localOnly) {
+                    // push the value to the array.
+                    push.apply(this, [obj]);
+                    
                     return;
                 }
 
                 // request the server to add
-                // TODO: handle fails onAdd. needs testing.
                 this.viewModel.server.add(ks.capitalizeObj(obj))
                     .done(function (data) {
                         ks.syncObj(obj, data);
+                        
+                        // push the value to the array.
+                        push.apply(this, [obj]);
                     })
                     .fail(function () {
-                        destroy.apply(observable, [obj]);
+                        console.log('fail to push.');
                     });
             },
             destroy: function (obj, localOnly, destroy, observable) {
                 console.log('destroy');
-                // destroy the value from the array
-                destroy.apply(this, [function (value) {
-
-                    return ks.compareObj(obj, value);
-
-                }]);
 
                 if (localOnly) {
+                    
+                    // destroy the value from the array
+                    destroy.apply(this, [function (value) {
+
+                        return ks.compareObj(obj, value);
+
+                    }]);
+                    
                     return;
                 }
 
                 // request the server to remove
-                // TODO: handle fails onRemove. needs testing.
-                this.viewModel.server.remove(utils.capitalizeObj(obj))
+                this.viewModel.server.remove(ks.capitalizeObj(obj))
+                    .done(function () {
+                        destroy.apply(observable, [obj, true, destroy, observable]);
+                    })
                     .fail(function () {
-                        // Not the best choise.
-                        push.apply(observable, [obj]);
+                        console.log("fail to delete.");
                     });
             }
         },
@@ -74,6 +80,8 @@
                 console.log('called this from server.');
             },
             destroy: function (obj) {
+                var observable = this;
+                
                 observable.destroy(
                     observable.mapFromServer(obj), /* the value to be pushed */
                     true /* localOnly */

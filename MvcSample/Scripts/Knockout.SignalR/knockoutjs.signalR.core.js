@@ -42,7 +42,7 @@
                 var value1 = obj1[field];
                 var value2 = obj2[field];
 
-                if (ks.getValue(value1) !== ks.getValue(value2)) {
+                if (ks.fn.getValue(value1) !== ks.fn.getValue(value2)) {
                     return false;
                 }
             }
