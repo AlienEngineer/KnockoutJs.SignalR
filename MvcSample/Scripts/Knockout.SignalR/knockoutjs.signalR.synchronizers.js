@@ -34,7 +34,7 @@
                         ks.syncObj(obj, data);
                         
                         // push the value to the array.
-                        push.apply(this, [obj]);
+                        push.apply(observable, [obj]);
                     })
                     .fail(function () {
                         console.log('fail to push.');
