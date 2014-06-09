@@ -22,7 +22,7 @@ The idea for this project is to be able to use SignalR in combination with Knock
 
 ```
 
-Withouth any extra code push is will be broadcasted via SingalR.
+Without any extra code push will be broadcasted via SingalR.
 ```Javascript
   self.addTask = function () {
     self.tasks.push(new Task({ Title: this.newTaskText() }));
